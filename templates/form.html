@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Real Estate Visulization</title>
+  </head>
+
+  <body style = "text-align:center;background-color:rgb(218, 191, 117)">
+  <h2 class = "h2" style = "text-align:center; margin-top:3%;margin-bottom:3%; padding:10px;">Real Estate Trend Visulization</h2>
+
+<!--<form action="/next" method = "post">-->
+<form action="/next" >  <!-- For testing Only -->
+
+    <p>Select the region of Interest:
+        <input list="region" name="region">
+        <datalist id="region">
+          <option value="California">
+          <option value="Massachusetts">
+          <option value="New Jersey">
+          <option value="District of Columbia">
+          <option value="Washington">
+        </datalist>
+    </p>
+    <p>Select the type of House: 
+        <input list="house_type" name="house_type">
+        <datalist id="house_type">
+          <option value="1 Bedroom">
+          <option value="2 Bedroom">
+          <option value="3 Bedroom">
+          <option value="4 Bedroom">
+          <option value="5 Bedroom">
+          <option value="Duplex-Triplex">
+          <option value="Single Family Residence">
+          
+        </datalist>
+    </p>
+
+    <p><input type = "submit" value = "Submit" /></p>
+</form>
+  </body>
+</html>
