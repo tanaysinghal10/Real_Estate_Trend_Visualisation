@@ -1,3 +1,4 @@
+import os  # added
 import pandas as pd
 import numpy as np
 from flask import Flask
@@ -2043,4 +2044,6 @@ def index2():
         return render_template('final_comparison.html',chart_code = chart_code,demo_script_code = demo_script_code)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    PORT = int(os.environ.get('PORT', 5000))         # added
+    app.run(host='0.0.0.0', port=PORT, debug=True)    # added
+    # app.run(debug=True)
