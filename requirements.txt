@@ -1,4 +1,5 @@
 backports.entry-points-selectable==1.1.0
+gunicorn==19.9.0
 bokeh==2.4.1
 click==8.0.3
 colorama==0.4.4
