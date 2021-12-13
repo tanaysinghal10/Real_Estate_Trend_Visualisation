@@ -7,6 +7,7 @@
       }
       </style> -->
       <style>
+
         body {
           background-image: url('https://m.foolcdn.com/media/millionacres/original_images/real_estate_trends.jpg?crop=4:3,smart');
         }
@@ -35,7 +36,7 @@
         <h4 class = " h4 m-1" style="text-align: center">Select your choice</h4>
           <hr/>
           <div>
-    <form method = "post" action = "/"> 
+    <form method = "post" action = "/next">
             <p>Select the region of interest:
                 <input list="region" name="region">
                 <datalist id="region">
@@ -74,9 +75,11 @@
      
       <input type="radio"  name="Choice" value="Rental price Vs Area(Square foot)"><br>
       <label >Rental Price per Square foot</label><br>
-      
-      
- <div style = "text-align:center">     
+
+<!--        <input type="radio"  name="Choice" value="New Choice"><br>-->
+<!--      <label >Select New Choice</label><br>-->
+
+        <div style = "text-align:center">
 <p><input type = "submit" value = "Submit" /></p>
 </div>          
 </form>
