@@ -10,18 +10,24 @@ from bokeh.io import output_notebook, output_file,show
 from bokeh.layouts import column
 from datetime import datetime
 from bokeh.models import CategoricalColorMapper, Legend
+import NewJersey
+import Mass
+import California
+import Columbia
+import Washinton
+import Bedrooms
 
 app = Flask(__name__)
 
 
-# @app.route('/')
-# def form():
-#
-#     return render_template('form.html')
+@app.route('/')
+def form():
+
+    return render_template('home.html')
 
 
 
-@app.route('/',methods = ['GET','POST'])
+@app.route('/next',methods = ['GET','POST'])
 def index():
    
     if request.method == 'GET':
@@ -29,1358 +35,118 @@ def index():
         p.image_url(url=['https://cdn.corporatefinanceinstitute.com/assets/real-estate-1024x614.jpeg'], x=0, y=1, w=0.8, h=0.6)
         demo_script_code,chart_code = components(p)
         return render_template('view_temp.html',chart_code = chart_code,demo_script_code = demo_script_code)
+
     elif request.method =='POST':
 
         choice = request.form["region"]
         house = request.form["house_type"]
         var1 = request.form["Choice"]
 
+        # if choice == "California" and house == "1 Bedroom":
+        #     while True:
+        #         if var1 == "Price Vs State":
+        #             p = California.California()
+        #
+        #         elif var1 == "Price vs Area(Square foot)":
+        #             p = Bedrooms.B_1()
+        #
+        #         elif var1 == "Rental price Vs Area(Square foot)":
+        #             p = Bedrooms.B_1_RP()
+        #
+        #         elif var1 == "Increase in House SalePrice as shown by Time Frequency":
+        #             p = California.Cal_4()
+        #
+        #         elif var1 == "New Choice":
+        #
+        #             p = figure(width=650, height=380)
+        #             p.image_url(url=['https://cdn.corporatefinanceinstitute.com/assets/real-estate-1024x614.jpeg'], x=0,
+        #                         y=1, w=0.8, h=0.6)
+        #             break
+        #         # demo_script_code, chart_code = components(p)
+        #         # return render_template('view_temp.html', chart_code=chart_code, demo_script_code=demo_script_code)
+
         if var1 == "Price Vs State":
 
+
             if choice == "California":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = \
-                State_time_series_year.groupby([State_time_series_year.year, State_time_series_year.RegionName])[
-                    'ZHVI_AllHomes'].mean().dropna().reset_index(name='SoldPrice')
-
-                p = figure(title="House Median Sale Prices from 1996 to 2017 in the US states", plot_width=700,
-                           plot_height=500)
-                # x_axis_type = "datetime"
-                # name of the x-axis
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'SoldPrice'
-                grp_1 = States_year_SalePrices[States_year_SalePrices["RegionName"] == "California"]
-
-                cal_year = grp_1['year'].tolist()
-                cal_sp = grp_1['SoldPrice'].tolist()
-
-                x_axis_coordinates = np.array(cal_year)
-                y_axis_coordinates = np.array(cal_sp)
-                color = "brown"
-                legend_label = "California"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
+                p = California.California()
 
             elif choice == "Massachusetts":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = \
-                State_time_series_year.groupby([State_time_series_year.year, State_time_series_year.RegionName])[
-                    'ZHVI_AllHomes'].mean().dropna().reset_index(name='SoldPrice')
-
-                p = figure(title="House Median Sale Prices from 1996 to 2017 in the US states", plot_width=700,
-                           plot_height=500)
-                # x_axis_type = "datetime"
-                # name of the x-axis
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'SoldPrice'
-                grp_2 = States_year_SalePrices[States_year_SalePrices["RegionName"] == "Massachusetts"]
-
-                Mas_year = grp_2['year'].tolist()
-                Mas_sp = grp_2['SoldPrice'].tolist()
-
-                x_axis_coordinates = np.array(Mas_year)
-                y_axis_coordinates = np.array(Mas_sp)
-                color = "blue"
-                legend_label = "Massachusetts"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
-
+                p = Mass.Massachusetts()
 
             elif choice == "New Jersey":
-
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = \
-                State_time_series_year.groupby([State_time_series_year.year, State_time_series_year.RegionName])[
-                    'ZHVI_AllHomes'].mean().dropna().reset_index(name='SoldPrice')
-
-                p = figure(title="House Median Sale Prices from 1996 to 2017 in the US states", plot_width=700,
-                           plot_height=500)
-                # x_axis_type = "datetime"
-                # name of the x-axis
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'SoldPrice'
-                grp_3 = States_year_SalePrices[States_year_SalePrices["RegionName"] == "NewJersey"]
-
-                Newj_year = grp_3['year'].tolist()
-                Newj_sp = grp_3['SoldPrice'].tolist()
-
-                x_axis_coordinates = np.array(Newj_year)
-                y_axis_coordinates = np.array(Newj_sp)
-                color = "orange"
-                legend_label = "New Jersey"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
-
-
-
+                p = NewJersey.New_jersey()
 
             elif choice == "District of Columbia":
-
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = \
-                State_time_series_year.groupby([State_time_series_year.year, State_time_series_year.RegionName])[
-                    'ZHVI_AllHomes'].mean().dropna().reset_index(name='SoldPrice')
-
-                p = figure(title="House Median Sale Prices from 1996 to 2017 in the US states", plot_width=700,
-                           plot_height=500)
-                # x_axis_type = "datetime"
-                # name of the x-axis
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'SoldPrice'
-                grp_4 = States_year_SalePrices[States_year_SalePrices["RegionName"] == "DistrictofColumbia"]
-                Dist_year = grp_4['year'].tolist()
-                Dist_sp = grp_4['SoldPrice'].tolist()
-
-                x_axis_coordinates = np.array(Dist_year)
-                y_axis_coordinates = np.array(Dist_sp)
-                color = "yellow"
-                legend_label = "District of Columbia"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
-
+                p = Columbia.Columbia()
 
             elif choice == "Washington":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = \
-                State_time_series_year.groupby([State_time_series_year.year, State_time_series_year.RegionName])[
-                    'ZHVI_AllHomes'].mean().dropna().reset_index(name='SoldPrice')
-
-                p = figure(title="House Median Sale Prices from 1996 to 2017 in the US states", plot_width=700,
-                           plot_height=500)
-                # x_axis_type = "datetime"
-                # name of the x-axis
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'SoldPrice'
-                grp_5 = States_year_SalePrices[States_year_SalePrices["RegionName"] == "Washington"]
-                Wash_year = grp_5['year'].tolist()
-                Wash_sp = grp_5['SoldPrice'].tolist()
-
-                x_axis_coordinates = np.array(Wash_year)
-                y_axis_coordinates = np.array(Wash_sp)
-                color = "deeppink"
-                legend_label = "Washington"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
+                p = Washinton.Wash()
 
 
         elif var1 == "Price vs Area(Square foot)":
+
             if house == "1 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                dfsq1 = State_time_series.groupby(State_time_series['year'])[
-                    'MedianListingPricePerSqft_1Bedroom'].mean().dropna().to_frame().reset_index()
-                sq1lst = dfsq1['year'].to_list()
-                price1 = dfsq1['MedianListingPricePerSqft_1Bedroom'].to_list()
-
-                p = figure(title="Median Listing Prices Per Sqft W.r.t Number of Bedrooms", plot_width=700,
-                           plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'Median Listing Prices Per Sqft'
-
-                x_axis_coordinates = np.array(sq1lst)
-                y_axis_coordinates = np.array(price1)
-                color = "brown"
-                legend_label = "1 Bedroom"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
-
+                p = Bedrooms.B_1()
 
             elif house == "2 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                dfsq2 = State_time_series.groupby(State_time_series['year'])[
-                    'MedianListingPricePerSqft_2Bedroom'].mean().dropna().reset_index()
-
-                sq2lst = dfsq2['year'].to_list()
-
-                price2 = dfsq2['MedianListingPricePerSqft_2Bedroom'].to_list()
-
-                p = figure(title="Median Listing Prices Per Sqft W.r.t Number of Bedrooms", plot_width=700,
-                           plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'Median Listing Prices Per Sqft'
-
-                x_axis_coordinates = np.array(sq2lst)
-                y_axis_coordinates = np.array(price2)
-                color = "blue"
-                legend_label = "2 Bedroom"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
-
+                p = Bedrooms.B_2()
 
             elif house == "3 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                df_3B = State_time_series.groupby(State_time_series['year'])[
-                    'MedianRentalPricePerSqft_3Bedroom'].mean().dropna().to_frame().reset_index()
-
-                y_3b = df_3B["year"].to_list()
-
-                price_3b = df_3B['MedianRentalPricePerSqft_3Bedroom']
-
-                p = figure(title="Real Estate Rental Prices Per SquareFoot", plot_width=700, plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                p.yaxis.axis_label = 'Median Rental Prices Per Sqft'
-
-                x_axis_coordinates = np.array(y_3b)
-                y_axis_coordinates = np.array(price_3b)
-                color = "orange"
-                legend_label = '3 Bedroom'
-
-                p.line(x_axis_coordinates, y_axis_coordinates,
-                       color=color, legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
+                p = Bedrooms.B_3()
 
             elif house == "4 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                dfsq4 = State_time_series.groupby(State_time_series['year'])[
-                    'MedianListingPricePerSqft_4Bedroom'].mean().dropna().reset_index()
-
-                sq4lst = dfsq4['year'].to_list()
-
-                price4 = dfsq4['MedianListingPricePerSqft_4Bedroom'].to_list()
-
-                p = figure(title="Median Listing Prices Per Sqft W.r.t Number of Bedrooms", plot_width=700,
-                           plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'Median Listing Prices Per Sqft'
-
-                x_axis_coordinates = np.array(sq4lst)
-                y_axis_coordinates = np.array(price4)
-                color = "yellow"
-                legend_label = "MedianListingPricePerSqft_4Bedroom"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
+                p = Bedrooms.B_4()
 
             elif house == "5 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                dfsq5 = State_time_series.groupby(State_time_series['year'])[
-                    'MedianListingPricePerSqft_5BedroomOrMore'].mean().dropna().reset_index()
-
-                sq5lst = dfsq5['year'].to_list()
-
-                price5 = dfsq5['MedianListingPricePerSqft_5BedroomOrMore'].to_list()
-
-                p = figure(title="Median Listing Prices Per Sqft W.r.t Number of Bedrooms", plot_width=700,
-                           plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'Median Listing Prices Per Sqft'
-
-                x_axis_coordinates = np.array(sq5lst)
-                y_axis_coordinates = np.array(price5)
-                color = "deeppink"
-                legend_label = "5 Bedroom"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
+                p = Bedrooms.B_5()
 
             elif house == "Duplex-Triplex":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                dfsqDT = State_time_series.groupby(State_time_series['year'])[
-                    'MedianListingPricePerSqft_DuplexTriplex'].mean().dropna().reset_index()
-
-                sqDTlst = dfsqDT['year'].to_list()
-
-                priceDT = dfsqDT['MedianListingPricePerSqft_DuplexTriplex'].to_list()
-
-                p = figure(title="Median Listing Prices Per Sqft W.r.t Number of Bedrooms", plot_width=700,
-                           plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                p.yaxis.axis_label = 'Median Listing Prices Per Sqft'
-
-                x_axis_coordinates = np.array(sqDTlst)
-                y_axis_coordinates = np.array(priceDT)
-                color = "seagreen"
-                legend_label = "Duplex-Triplex"
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
+                p = Bedrooms.DT()
 
             elif house == "Single Family Residence":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                dfsqSFR = State_time_series.groupby(State_time_series['year'])[
-                    'MedianListingPricePerSqft_SingleFamilyResidence'].mean().dropna().reset_index()
-
-                sqSFRlst = dfsqSFR['year'].to_list()
-
-                priceSFR = dfsqSFR['MedianListingPricePerSqft_SingleFamilyResidence'].to_list()
-
-                p = figure(title="Median Listing Prices Per Sqft W.r.t Number of Bedrooms", plot_width=700,
-                           plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                # name of the y-axis
-                p.yaxis.axis_label = 'Median Listing Prices Per Sqft'
-
-                x_axis_coordinates = np.array(sqSFRlst)
-                y_axis_coordinates = np.array(priceSFR)
-                color = "magenta"
-                legend_label = "Single Family Residence"
-
-                p.line(x_axis_coordinates,
-                       y_axis_coordinates,
-                       color=color,
-                       legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
+                p = Bedrooms.SFR()
 
         elif var1 == "Rental price Vs Area(Square foot)":
+
             if house == "1 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                df_1B = State_time_series.groupby(State_time_series['year'])[
-                    'MedianRentalPricePerSqft_1Bedroom'].mean().dropna().to_frame().reset_index()
-
-                y_1b = df_1B["year"].to_list()
-
-                price_1b = df_1B['MedianRentalPricePerSqft_1Bedroom']
-
-                p = figure(title="Real Estate Rental Prices Per SquareFoot", plot_width=700, plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                p.yaxis.axis_label = 'Median Rental Prices Per Sqft'
-
-                x_axis_coordinates = np.array(y_1b)
-                y_axis_coordinates = np.array(price_1b)
-                color = "brown"
-                legend_label = '1 Bedroom'
-
-                p.line(x_axis_coordinates, y_axis_coordinates,
-                       color=color, legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
+                p = Bedrooms.B_1_RP()
 
             elif house == "2 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                df_2B = State_time_series.groupby(State_time_series['year'])[
-                    'MedianRentalPricePerSqft_2Bedroom'].mean().dropna().to_frame().reset_index()
-
-                y_2b = df_2B["year"].to_list()
-
-                price_2b = df_2B['MedianRentalPricePerSqft_2Bedroom']
-
-                p = figure(title="Real Estate Rental Prices Per SquareFoot", plot_width=700, plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                p.yaxis.axis_label = 'Median Rental Prices Per Sqft'
-
-                x_axis_coordinates = np.array(y_2b)
-                y_axis_coordinates = np.array(price_2b)
-                color = "blue"
-                legend_label = '2 Bedroom'
-
-                p.line(x_axis_coordinates, y_axis_coordinates,
-                       color=color, legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
+                p = Bedrooms.B_2_RP()
 
             elif house == "3 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                df_3B = State_time_series.groupby(State_time_series['year'])[
-                    'MedianRentalPricePerSqft_3Bedroom'].mean().dropna().to_frame().reset_index()
-
-                y_3b = df_3B["year"].to_list()
-
-                price_3b = df_3B['MedianRentalPricePerSqft_3Bedroom']
-
-                p = figure(title="Real Estate Rental Prices Per SquareFoot", plot_width=700, plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                p.yaxis.axis_label = 'Median Rental Prices Per Sqft'
-
-                x_axis_coordinates = np.array(y_3b)
-                y_axis_coordinates = np.array(price_3b)
-                color = "orange"
-                legend_label = '3 Bedroom'
-
-                p.line(x_axis_coordinates, y_axis_coordinates,
-                       color=color, legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
+                p = Bedrooms.B_3_RP()
 
             elif house == "4 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                df_4B = State_time_series.groupby(State_time_series['year'])[
-                    'MedianRentalPricePerSqft_4Bedroom'].mean().dropna().to_frame().reset_index()
-
-                y_4b = df_4B["year"].to_list()
-
-                price_4b = df_4B['MedianRentalPricePerSqft_4Bedroom']
-
-                p = figure(title="Real Estate Rental Prices Per SquareFoot", plot_width=700, plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                p.yaxis.axis_label = 'Median Rental Prices Per Sqft'
-
-                x_axis_coordinates = np.array(y_4b)
-                y_axis_coordinates = np.array(price_4b)
-                color = "yellow"
-                legend_label = '4 Bedroom'
-
-                p.line(x_axis_coordinates, y_axis_coordinates,
-                       color=color, legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
+                p = Bedrooms.B_4_RP()
 
             elif house == "5 Bedroom":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                df_5B = State_time_series.groupby(State_time_series['year'])[
-                    'MedianRentalPricePerSqft_5BedroomOrMore'].mean().dropna().to_frame().reset_index()
-
-                y_5b = df_5B["year"].to_list()
-
-                price_5b = df_5B['MedianRentalPricePerSqft_5BedroomOrMore']
-
-                p = figure(title="Real Estate Rental Prices Per SquareFoot", plot_width=700, plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                p.yaxis.axis_label = 'Median Rental Prices Per Sqft'
-
-                x_axis_coordinates = np.array(y_5b)
-                y_axis_coordinates = np.array(price_5b)
-                color = "deeppink"
-                legend_label = '5 Bedroom'
-
-                p.line(x_axis_coordinates, y_axis_coordinates,
-                       color=color, legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
+                p = Bedrooms.B_5_RP()
 
             elif house == "Duplex-Triplex":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                df_dt = State_time_series.groupby(State_time_series['year'])[
-                    'MedianRentalPricePerSqft_DuplexTriplex'].mean().dropna().to_frame().reset_index()
-
-                y_dt = df_dt["year"].to_list()
-
-                price_dt = df_dt['MedianRentalPricePerSqft_DuplexTriplex']
-
-                p = figure(title="Real Estate Rental Prices Per SquareFoot", plot_width=700, plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                p.yaxis.axis_label = 'Median Rental Prices Per Sqft'
-
-                x_axis_coordinates = np.array(y_dt)
-                y_axis_coordinates = np.array(price_dt)
-                color = "seagreen"
-                legend_label = 'Duplex-Triplex'
-
-                p.line(x_axis_coordinates, y_axis_coordinates,
-                       color=color, legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
+                p = Bedrooms.DT_RP()
 
             elif house == "Single Family Residence":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-
-                df_sfr = State_time_series.groupby(State_time_series['year'])[
-                    'MedianRentalPricePerSqft_SingleFamilyResidence'].mean().dropna().to_frame().reset_index()
-
-                y_sfr = df_sfr["year"].to_list()
-
-                price_str = df_sfr['MedianRentalPricePerSqft_SingleFamilyResidence']
-
-                p = figure(title="Real Estate Rental Prices Per SquareFoot", plot_width=700, plot_height=500)
-
-                p.xaxis.axis_label = 'Year'
-
-                p.yaxis.axis_label = 'Median Rental Prices Per Sqft'
-
-                x_axis_coordinates = np.array(y_sfr)
-                y_axis_coordinates = np.array(price_str)
-                color = "magenta"
-                legend_label = 'Single Family Residence'
-
-                p.line(x_axis_coordinates, y_axis_coordinates,
-                       color=color, legend_label=legend_label)
-
-                p.legend.click_policy = "hide"
-                p.legend.label_text_font_size = "7pt"
-                p.add_layout(p.legend[0], 'right')
-
+                p = Bedrooms.SFR_RP()
 
 
         elif var1 == "Increase in House SalePrice as shown by Time Frequency":
 
             if choice == "California":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = State_time_series_year.groupby([State_time_series_year.Date, State_time_series_year.RegionName])[
-                    'Sale_Prices'].mean().dropna().reset_index(name='Sale_Prices')
-                PriceDF = States_year_SalePrices.pivot(index='Date', columns='RegionName',
-                                                       values='Sale_Prices').dropna()  # .plot(figsize=(15,8))#, color=colors, legend=False)
-
-                t0 = PriceDF.index
-                t1 = pd.date_range(pd.to_datetime('30/01/2009'), pd.to_datetime('2017-08-31'), freq='A')
-                t2 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2016-08-31', dayfirst=True), freq='M')
-                t3 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2015-08-31', dayfirst=True), freq='Q')
-
-                df1 = PriceDF.reindex(index=t0, columns=highest_cost_states).reset_index()
-                df2 = PriceDF.reindex(index=t1, columns=highest_cost_states).reset_index()
-                df3 = PriceDF.reindex(index=t2, columns=highest_cost_states).reset_index()
-                df4 = PriceDF.reindex(index=t3, columns=highest_cost_states).reset_index()
-
-                time_daily = df1["Date"].to_list()
-                time_yearly = df2["index"].to_list()
-                time_monthly = df3["index"].to_list()
-                time_quarterly = df4["index"].to_list()
-
-                year = time_daily
-                per = df1["California"].to_list()
-                color = "orange"
-                legend = 'California'
-
-                p1 = figure(title="Increase in House SalePrice for Top US states as shown by Time Frequency",
-                            x_axis_type="datetime", width=600, plot_height=200)
-
-                p1.xaxis.axis_label = 'time'
-
-                p1.yaxis.axis_label = 'Saleprice Daily'
-
-                # year, price, color, legend
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p1.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p1.legend.click_policy = "hide"
-                p1.legend.label_text_font_size = "7pt"
-                p1.add_layout(p1.legend[0], 'right')
-
-                year = time_yearly
-                per = df2["California"].to_list()
-                color = "orange"
-                legend = 'California'
-
-                p2 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p2.xaxis.axis_label = 'time'
-
-                p2.yaxis.axis_label = 'Saleprice Yearly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p2.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p2.legend.click_policy = "hide"
-                p2.legend.label_text_font_size = "7pt"
-                p2.add_layout(p2.legend[0], 'right')
-
-                year = time_monthly
-                per = df3["California"].to_list()
-                color = "orange"
-                legend = 'California'
-
-                p3 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p3.xaxis.axis_label = 'time'
-
-                p3.yaxis.axis_label = 'Saleprice Monthly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p3.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p3.legend.click_policy = "hide"
-                p3.legend.label_text_font_size = "7pt"
-                p3.add_layout(p3.legend[0], 'right')
-
-                year = time_quarterly
-                per = df4["California"].to_list()
-                color = "orange"
-                legend = 'California'
-
-                p4 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p4.xaxis.axis_label = 'time'
-
-                p4.yaxis.axis_label = 'Saleprice Quartertly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p4.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p4.legend.click_policy = "hide"
-                p4.legend.label_text_font_size = "7pt"
-                p4.add_layout(p4.legend[0], 'right')
-
-                # put all the plots in a VBox
-                p = column(p1, p2, p3, p4)
-
-
-
+                p = California.Cal_4()
 
             elif choice == "Massachusetts":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = \
-                State_time_series_year.groupby([State_time_series_year.Date, State_time_series_year.RegionName])[
-                    'Sale_Prices'].mean().dropna().reset_index(name='Sale_Prices')
-                PriceDF = States_year_SalePrices.pivot(index='Date', columns='RegionName',
-                                                       values='Sale_Prices').dropna()  # .plot(figsize=(15,8))#, color=colors, legend=False)
-
-                t0 = PriceDF.index
-                t1 = pd.date_range(pd.to_datetime('30/01/2009'), pd.to_datetime('2017-08-31'), freq='A')
-                t2 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2016-08-31', dayfirst=True), freq='M')
-                t3 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2015-08-31', dayfirst=True), freq='Q')
-
-                df1 = PriceDF.reindex(index=t0, columns=highest_cost_states).reset_index()
-                df2 = PriceDF.reindex(index=t1, columns=highest_cost_states).reset_index()
-                df3 = PriceDF.reindex(index=t2, columns=highest_cost_states).reset_index()
-                df4 = PriceDF.reindex(index=t3, columns=highest_cost_states).reset_index()
-
-                time_daily = df1["Date"].to_list()
-                time_yearly = df2["index"].to_list()
-                time_monthly = df3["index"].to_list()
-                time_quarterly = df4["index"].to_list()
-
-                year = time_daily
-                per = df1["Massachusetts"].to_list()
-                color = "yellow"
-                legend = 'Massachusetts'
-
-                p1 = figure(title="Increase in House SalePrice for Top US states as shown by Time Frequency",
-                            x_axis_type="datetime", width=600, plot_height=200)
-
-                p1.xaxis.axis_label = 'time'
-
-                p1.yaxis.axis_label = 'Saleprice Daily'
-
-                # year, price, color, legend
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p1.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p1.legend.click_policy = "hide"
-                p1.legend.label_text_font_size = "7pt"
-                p1.add_layout(p1.legend[0], 'right')
-
-                year = time_yearly
-                per = df2["Massachusetts"].to_list()
-                color = "yellow"
-                legend = 'Massachusetts'
-
-                p2 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p2.xaxis.axis_label = 'time'
-
-                p2.yaxis.axis_label = 'Saleprice Yearly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p2.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p2.legend.click_policy = "hide"
-                p2.legend.label_text_font_size = "7pt"
-                p2.add_layout(p2.legend[0], 'right')
-
-                year = time_monthly
-                per = df3["Massachusetts"].to_list()
-                color = "yellow"
-                legend = 'Massachusetts'
-
-                p3 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p3.xaxis.axis_label = 'time'
-
-                p3.yaxis.axis_label = 'Saleprice Monthly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p3.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p3.legend.click_policy = "hide"
-                p3.legend.label_text_font_size = "7pt"
-                p3.add_layout(p3.legend[0], 'right')
-
-                year = time_quarterly
-                per = df4["Massachusetts"].to_list()
-                color = "yellow"
-                legend = 'Massachusetts'
-
-                p4 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p4.xaxis.axis_label = 'time'
-
-                p4.yaxis.axis_label = 'Saleprice Quartertly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p4.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p4.legend.click_policy = "hide"
-                p4.legend.label_text_font_size = "7pt"
-                p4.add_layout(p4.legend[0], 'right')
-
-                # put all the plots in a VBox
-                p = column(p1, p2, p3, p4)
-
+                p = Mass.Mass_4()
 
             elif choice == "New Jersey":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = \
-                State_time_series_year.groupby([State_time_series_year.Date, State_time_series_year.RegionName])[
-                    'Sale_Prices'].mean().dropna().reset_index(name='Sale_Prices')
-                PriceDF = States_year_SalePrices.pivot(index='Date', columns='RegionName',
-                                                       values='Sale_Prices').dropna()  # .plot(figsize=(15,8))#, color=colors, legend=False)
-
-                t0 = PriceDF.index
-                t1 = pd.date_range(pd.to_datetime('30/01/2009'), pd.to_datetime('2017-08-31'), freq='A')
-                t2 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2016-08-31', dayfirst=True), freq='M')
-                t3 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2015-08-31', dayfirst=True), freq='Q')
-
-                df1 = PriceDF.reindex(index=t0, columns=highest_cost_states).reset_index()
-                df2 = PriceDF.reindex(index=t1, columns=highest_cost_states).reset_index()
-                df3 = PriceDF.reindex(index=t2, columns=highest_cost_states).reset_index()
-                df4 = PriceDF.reindex(index=t3, columns=highest_cost_states).reset_index()
-
-                time_daily = df1["Date"].to_list()
-                time_yearly = df2["index"].to_list()
-                time_monthly = df3["index"].to_list()
-                time_quarterly = df4["index"].to_list()
-
-                year = time_daily
-                per = df1["NewJersey"].to_list()
-                color = "red"
-                legend = 'New Jersey'
-
-                p1 = figure(title="Increase in House SalePrice for Top US states as shown by Time Frequency",
-                            x_axis_type="datetime", width=600, plot_height=200)
-
-                p1.xaxis.axis_label = 'time'
-
-                p1.yaxis.axis_label = 'Saleprice Daily'
-
-                # year, price, color, legend
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p1.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p1.legend.click_policy = "hide"
-                p1.legend.label_text_font_size = "7pt"
-                p1.add_layout(p1.legend[0], 'right')
-
-                year = time_yearly
-                per = df2["NewJersey"].to_list()
-                color = "red"
-                legend = 'New Jersey'
-
-                p2 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p2.xaxis.axis_label = 'time'
-
-                p2.yaxis.axis_label = 'Saleprice Yearly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p2.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p2.legend.click_policy = "hide"
-                p2.legend.label_text_font_size = "7pt"
-                p2.add_layout(p2.legend[0], 'right')
-
-                year = time_monthly
-                per = df3["NewJersey"].to_list()
-                color = "red"
-                legend = 'New Jersey'
-
-                p3 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p3.xaxis.axis_label = 'time'
-
-                p3.yaxis.axis_label = 'Saleprice Monthly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p3.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p3.legend.click_policy = "hide"
-                p3.legend.label_text_font_size = "7pt"
-                p3.add_layout(p3.legend[0], 'right')
-
-                year = time_quarterly
-                per = df4["NewJersey"].to_list()
-                color = "red"
-                legend = 'New Jersey'
-
-                p4 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p4.xaxis.axis_label = 'time'
-
-                p4.yaxis.axis_label = 'Saleprice Quartertly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p4.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p4.legend.click_policy = "hide"
-                p4.legend.label_text_font_size = "7pt"
-                p4.add_layout(p4.legend[0], 'right')
-
-                # put all the plots in a VBox
-                p = column(p1, p2, p3, p4)
-
+                p = NewJersey.New_Jersey_4()
 
             elif choice == "District of Columbia":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = \
-                State_time_series_year.groupby([State_time_series_year.Date, State_time_series_year.RegionName])[
-                    'Sale_Prices'].mean().dropna().reset_index(name='Sale_Prices')
-                PriceDF = States_year_SalePrices.pivot(index='Date', columns='RegionName',
-                                                       values='Sale_Prices').dropna()  # .plot(figsize=(15,8))#, color=colors, legend=False)
-
-                t0 = PriceDF.index
-                t1 = pd.date_range(pd.to_datetime('30/01/2009'), pd.to_datetime('2017-08-31'), freq='A')
-                t2 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2016-08-31', dayfirst=True), freq='M')
-                t3 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2015-08-31', dayfirst=True), freq='Q')
-
-                df1 = PriceDF.reindex(index=t0, columns=highest_cost_states).reset_index()
-                df2 = PriceDF.reindex(index=t1, columns=highest_cost_states).reset_index()
-                df3 = PriceDF.reindex(index=t2, columns=highest_cost_states).reset_index()
-                df4 = PriceDF.reindex(index=t3, columns=highest_cost_states).reset_index()
-
-                time_daily = df1["Date"].to_list()
-                time_yearly = df2["index"].to_list()
-                time_monthly = df3["index"].to_list()
-                time_quarterly = df4["index"].to_list()
-
-                year = time_daily
-                per = df1["DistrictofColumbia"].to_list()
-                color = "blue"
-                legend = 'District of Columbia'
-
-                p1 = figure(title="Increase in House SalePrice for Top US states as shown by Time Frequency",
-                            x_axis_type="datetime", width=600, plot_height=200)
-
-                p1.xaxis.axis_label = 'time'
-
-                p1.yaxis.axis_label = 'Saleprice Daily'
-
-                # year, price, color, legend
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p1.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p1.legend.click_policy = "hide"
-                p1.legend.label_text_font_size = "7pt"
-                p1.add_layout(p1.legend[0], 'right')
-
-                year = time_yearly
-                per = df2["DistrictofColumbia"].to_list()
-                color = "blue"
-                legend = 'District of Columbia'
-
-                p2 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p2.xaxis.axis_label = 'time'
-
-                p2.yaxis.axis_label = 'Saleprice Yearly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p2.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p2.legend.click_policy = "hide"
-                p2.legend.label_text_font_size = "7pt"
-                p2.add_layout(p2.legend[0], 'right')
-
-                year = time_monthly
-                per = df3["DistrictofColumbia"].to_list()
-                color = "blue"
-                legend = 'District of Columbia'
-
-                p3 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p3.xaxis.axis_label = 'time'
-
-                p3.yaxis.axis_label = 'Saleprice Monthly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p3.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p3.legend.click_policy = "hide"
-                p3.legend.label_text_font_size = "7pt"
-                p3.add_layout(p3.legend[0], 'right')
-
-                year = time_quarterly
-                per = df4["DistrictofColumbia"].to_list()
-                color = "blue"
-                legend = 'District of Columbia'
-
-                p4 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p4.xaxis.axis_label = 'time'
-
-                p4.yaxis.axis_label = 'Saleprice Quartertly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p4.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p4.legend.click_policy = "hide"
-                p4.legend.label_text_font_size = "7pt"
-                p4.add_layout(p4.legend[0], 'right')
-
-                # put all the plots in a VBox
-                p = column(p1, p2, p3, p4)
-
+                p = Columbia.Colum_4()
 
             elif choice == "Washington":
-                State_time_series = pd.read_csv("State_time_series.csv", parse_dates=True)
-                State_time_series.Date = pd.to_datetime(State_time_series.Date)
-                State_time_series['year'] = State_time_series.Date.dt.year
-                states = set(State_time_series[
-                                 ~State_time_series['ZHVI_AllHomes'].isnull() &
-                                 ~State_time_series['Sale_Prices'].isnull()
-                                 ]['RegionName'].values)
-
-                State_time_series_year = State_time_series[State_time_series['RegionName'].isin(states)].copy()
-                highest_cost_states = State_time_series_year[['RegionName', 'ZHVI_AllHomes']].groupby(
-                    'RegionName').max().sort_values(by=['ZHVI_AllHomes'], ascending=False)[:5].index.values.tolist()
-                State_time_series_year = State_time_series_year[
-                    State_time_series_year.RegionName.isin(highest_cost_states)]
-                State_time_series_year.year = State_time_series_year.Date.dt.year
-                States_year_SalePrices = \
-                State_time_series_year.groupby([State_time_series_year.Date, State_time_series_year.RegionName])[
-                    'Sale_Prices'].mean().dropna().reset_index(name='Sale_Prices')
-                PriceDF = States_year_SalePrices.pivot(index='Date', columns='RegionName',
-                                                       values='Sale_Prices').dropna()  # .plot(figsize=(15,8))#, color=colors, legend=False)
-
-                t0 = PriceDF.index
-                t1 = pd.date_range(pd.to_datetime('30/01/2009'), pd.to_datetime('2017-08-31'), freq='A')
-                t2 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2016-08-31', dayfirst=True), freq='M')
-                t3 = pd.date_range(pd.to_datetime('30/01/2009', dayfirst=True),
-                                   pd.to_datetime('2015-08-31', dayfirst=True), freq='Q')
-
-                df1 = PriceDF.reindex(index=t0, columns=highest_cost_states).reset_index()
-                df2 = PriceDF.reindex(index=t1, columns=highest_cost_states).reset_index()
-                df3 = PriceDF.reindex(index=t2, columns=highest_cost_states).reset_index()
-                df4 = PriceDF.reindex(index=t3, columns=highest_cost_states).reset_index()
-
-                time_daily = df1["Date"].to_list()
-                time_yearly = df2["index"].to_list()
-                time_monthly = df3["index"].to_list()
-                time_quarterly = df4["index"].to_list()
-
-                year = time_daily
-                per = df1["Washington"].to_list()
-                color = "seagreen"
-                legend = 'Washington'
-
-                p1 = figure(title="Increase in House SalePrice for Top US states as shown by Time Frequency",
-                            x_axis_type="datetime", width=600, plot_height=200)
-
-                p1.xaxis.axis_label = 'time'
-
-                p1.yaxis.axis_label = 'Saleprice Daily'
-
-                # year, price, color, legend
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p1.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p1.legend.click_policy = "hide"
-                p1.legend.label_text_font_size = "7pt"
-                p1.add_layout(p1.legend[0], 'right')
-
-                year = time_yearly
-                per = df2["Washington"].to_list()
-                color = "seagreen"
-                legend = 'Washington'
-
-                p2 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p2.xaxis.axis_label = 'time'
-
-                p2.yaxis.axis_label = 'Saleprice Yearly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p2.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p2.legend.click_policy = "hide"
-                p2.legend.label_text_font_size = "7pt"
-                p2.add_layout(p2.legend[0], 'right')
-
-                year = time_monthly
-                per = df3["Washington"].to_list()
-                color = "seagreen"
-                legend = 'Washington'
-
-                p3 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p3.xaxis.axis_label = 'time'
-
-                p3.yaxis.axis_label = 'Saleprice Monthly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p3.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p3.legend.click_policy = "hide"
-                p3.legend.label_text_font_size = "7pt"
-                p3.add_layout(p3.legend[0], 'right')
-
-                year = time_quarterly
-                per = df4["Washington"].to_list()
-                color = "seagreen"
-                legend = 'Washington'
-
-                p4 = figure(x_axis_type="datetime", width=600, plot_height=200, title=None)
-
-                p4.xaxis.axis_label = 'time'
-
-                p4.yaxis.axis_label = 'Saleprice Quartertly'
-
-                x_axis_coordinates = np.array(year)
-                y_axis_coordinates = np.array(per)
-                color = color
-                legend_label = legend
-
-                p4.line(x_axis_coordinates, y_axis_coordinates,
-                        color=color, legend_label=legend_label)
-
-                p4.legend.click_policy = "hide"
-                p4.legend.label_text_font_size = "7pt"
-                p4.add_layout(p4.legend[0], 'right')
-
-                # put all the plots in a VBox
-                p = column(p1, p2, p3, p4)
+                p = Washinton.Wash_4()
 
 
         demo_script_code,chart_code = components(p)
@@ -1486,6 +252,7 @@ def index2():
                     
             #p.legend.location = "top_left"
             p.add_layout(p.legend[0], 'right')
+            p.left[0].formatter.use_scientific = False
             p.legend.click_policy="hide"
  
             
@@ -1532,6 +299,7 @@ def index2():
     
             p.legend.click_policy = "hide"
             p.legend.label_text_font_size = "7pt"
+            p.left[0].formatter.use_scientific = False
             p.add_layout(p.legend[0], 'right')
             
         elif var1 == "Price vs Area(Square foot)":
@@ -1668,6 +436,7 @@ def index2():
 #p.legend.location = "bottom_right"
             p.legend.click_policy="hide"
             p.legend.label_text_font_size = "7pt"
+            p.left[0].formatter.use_scientific = False
             p.add_layout(p.legend[0], 'right')
  
         elif var1 == "Percentage Gain/Loss vs year":
@@ -1718,6 +487,7 @@ def index2():
             p.legend.location = "center"
             p.legend.click_policy="hide"
             p.legend.label_text_font_size = "10pt"
+            p.left[0].formatter.use_scientific = False
  
         elif var1 == "Rental price Vs Area(Square foot)":
             # lst = ["2007-11-23", "2008-11-23","2010-11-23","2012-11-23"]
@@ -1795,6 +565,7 @@ def index2():
     
             p.legend.click_policy = "hide"
             p.legend.label_text_font_size = "7pt"
+            p.left[0].formatter.use_scientific = False
             p.add_layout(p.legend[0], 'right')
         elif var1 == "Increase in House SalePrice as shown by Time Frequency":
 
@@ -1880,6 +651,7 @@ def index2():
     
             p1.legend.click_policy = "hide"
             p1.legend.label_text_font_size = "7pt"
+            p1.left[0].formatter.use_scientific = False
             p1.add_layout(p1.legend[0], 'right')
 
 
@@ -1904,6 +676,7 @@ def index2():
     
             p2.legend.click_policy = "hide"
             p2.legend.label_text_font_size = "7pt"
+            p2.left[0].formatter.use_scientific = False
             p2.add_layout(p2.legend[0], 'right')
 
 
@@ -1927,6 +700,7 @@ def index2():
     
             p3.legend.click_policy = "hide"
             p3.legend.label_text_font_size = "7pt"
+            p3.left[0].formatter.use_scientific = False
             p3.add_layout(p3.legend[0], 'right')
 
 
@@ -1950,6 +724,7 @@ def index2():
     
             p4.legend.click_policy = "hide"
             p4.legend.label_text_font_size = "7pt"
+            p4.left[0].formatter.use_scientific = False
             p4.add_layout(p4.legend[0], 'right')
 
 
@@ -1998,7 +773,9 @@ def index2():
     
             p.legend.click_policy = "hide"
             p.legend.label_text_font_size = "7pt"
+            p.left[0].formatter.use_scientific = False
             p.add_layout(p.legend[0], 'right')
+
         elif var1 == "Real Estate Properties Decresing Vs Increasing in Values in US":
             State_time_series = pd.read_csv("State_time_series.csv",parse_dates=True)
             State_time_series.Date = pd.to_datetime(State_time_series.Date)
@@ -2038,6 +815,7 @@ def index2():
     
             p.legend.click_policy = "hide"
             p.legend.label_text_font_size = "7pt"
+            p.left[0].formatter.use_scientific = False
             p.add_layout(p.legend[0], 'right')
 
         demo_script_code,chart_code = components(p)
